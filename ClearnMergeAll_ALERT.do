@@ -106,7 +106,7 @@ rename usemarijuanao~p ph5_temp
 rename usemarijuanad~l ph6_temp
 
 foreach n of numlist 1/6 {
- gen ph`n'_pre=1 
+ replace ph`n'_pre=1 
  replace ph`n'_pre=2 if ph`n'_temp=="Slight"
  replace ph`n'_pre=3 if ph`n'_temp=="Moderate"
  replace ph`n'_pre=4 if ph`n'_temp=="Great"
@@ -156,7 +156,9 @@ save "C:\Users\s.KIshida\Dropbox (OCDE)\TUPE\Data Files\SY 2018-19\Stata Files\P
 use "C:\Users\s.KIshida\Dropbox (OCDE)\TUPE\Data Files\SY 2018-19\Stata Files\temp\Project AlERT Post-Survey_KI.dta", clear
 append using "C:\Users\s.KIshida\Dropbox (OCDE)\TUPE\Data Files\SY 2018-19\Stata Files\temp\Project AlERT Post-Survey_paper_KI.dta", generate(AppendResults)
 gen temp= lower(Unique_ID)
-rename temp UniqueID
+drop Unique_ID
+rename temp Unique_ID
+order Unique_ID, after(Teacher_Name)
 save "C:\Users\s.KIshida\Dropbox (OCDE)\TUPE\Data Files\SY 2018-19\Stata Files\Project ALERT Post-Survey_all_KI.dta", replace
 
 *I am merging the pre and post****************************************************************************************************************************************
@@ -164,3 +166,14 @@ save "C:\Users\s.KIshida\Dropbox (OCDE)\TUPE\Data Files\SY 2018-19\Stata Files\P
 *There are only 750 matched observations
 *save "C:\Users\s.KIshida\Dropbox (OCDE)\TUPE\Data Files\SY 2018-19\Stata Files\temp\Project ALERT_all_KI.dta", replace
 
+** Clean for Merge
+
+forv i = 1/6 {
+	encode ph`i'_pre, gen(ph`i')
+	
+	}
+
+label define ph1 4 "Great" 3 "Moderate" 1 "None" 2 "Slight", replace
+label values ph1-ph6 ph1
+drop ph1_pre-ph6_pre
+rename (ph1-ph6)=_pre
